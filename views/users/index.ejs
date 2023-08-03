@@ -1,0 +1,156 @@
+
+<form class="registration-form" action="/users" method="post" enctype="multipart/form-data">
+  <!-- profile photo -->
+  <div class="selectDisable" id="profile">
+    <label>
+      <% if(!locals.user) { %>
+        <img src='/images/default-profile.jpg' id="profile-pic">
+      <% } else if(locals.user.profilePhoto === "default-profile.jpg") { %>
+        <img src='/images/default-profile.jpg' id="profile-pic">
+      <% } else { %>
+        <img src="/uploads/<%= locals.user.profilePhoto %>" id="profile-pic">
+      <% } %>
+      <input type="file" name="profile-photo" id="profile-photo" onchange="previewFile()" accept="image/*" style="display: none;" />
+    </label>
+  </div>
+
+
+  <!-- user's name - textbox -->
+  <div class="form-group">
+    <label for="name" class="col-sm-2 col-form-label">Name</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" name="name" value="<%= locals.user.name %>">
+    </div>
+  </div>
+
+  <!-- email - textbox -->
+  <div class="form-group">
+    <label for="email" class="col-sm-2 col-form-label">Email</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control" name="email" value="<%= locals.user.email %>" readonly>
+    </div>
+  </div>
+
+  <!-- phone number - textbox -->
+  <div class="form-group">
+    <label for="phone" class="col-sm-2 col-form-label">Phone Number</label>
+    <div class="col-sm-10">
+      <input type="tel" class="form-control" name="phone" value="<%= locals.user.phoneNumber %>">
+    </div>
+  </div>
+
+  <!-- date of birth - date -->
+  <div class="form-group">
+    <label for="phone" class="col-sm-2 col-form-label">Date of Birth</label>
+    <div class="col-sm-10">
+      <input type="date" class="form-control" name="dob" id="dob" readonly>
+    </div>
+  </div>
+
+  <!-- password - textbox -->
+  <div class="form-group">
+    <label for="password" class="col-sm-2 col-form-label">Change Password</label>
+    <div class="col-sm-10">
+      <input type="password" class="form-control" name="password" placeholder="Password"><br>
+    </div>
+  </div>
+
+  <!-- sex - text -->
+  <div class="form-group">
+    <label for="phone" class="col-sm-2 col-form-label">Sex</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" value="<%= locals.user.sex %>" readonly>
+    </div>
+  </div>
+
+  <!-- address - textarea -->
+  <div class="form-group">
+    <label for="address">Address</label>
+    <div class="col-sm-10">
+      <textarea class="form-control" name="address" rows="3"><%= locals.user.address %></textarea>
+    </div>
+  </div>
+
+  <!-- Type of user - radio button -->
+  <div class="form-group ">
+    <legend class="col-form-label col-sm-2 pt-0">Type of User</legend>
+    <div class="col-sm-10 usertype-radio-button">
+      <% if(locals.user.userType === "customer") { %>
+        <div class="form-check">
+          <label class="form-check-label">
+            <input class="form-check-input" type="radio" name="usertype" value="customer" checked>
+            Customer (User who want to book resorts)
+          </label>
+        </div>
+        <div class="form-check">
+          <label class="form-check-label">
+            <input class="form-check-input" type="radio" name="usertype" value="manager">
+            Manger (User who is owner of resort(s))
+          </label>
+        </div>
+      <% } else if(locals.user.userType === "manager") { %>
+        <div class="form-check">
+          <label class="form-check-label">
+            <input class="form-check-input" type="radio" name="usertype" value="customer">
+            Customer (User who want to book resorts)
+          </label>
+        </div>
+        <div class="form-check">
+          <label class="form-check-label">
+            <input class="form-check-input" type="radio" name="usertype" value="manager" checked>
+            Manger (User who is owner of resort(s))
+          </label>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <br>
+  
+  <!-- submit and reset button -->
+  <div class="form-group">
+    <div class="col-sm-10 reset-submit-class">
+      <button type="submit" class="btn btn-primary reset-submit">Save</button>
+    </div>
+  </div>
+  
+  <br>
+  <br>
+
+  <% if (locals != null && locals.stat == "ok" ) { %>
+    <%- include('partials/successMessage.ejs', locals.message) %> 
+  <% } else if (locals != null && locals.stat == "err" ) { %>
+    <%- include('partials/errorMessage.ejs', locals.message) %> 
+  <% } %>
+  
+</form>
+<script defer type="text/javascript">
+  
+  let d = new Date("<%= locals.user.dob %>" );
+  let day = d.getDate();
+  let month = d.getMonth() + 1;
+  let year = d.getFullYear();
+
+  if (month < 10) month = "0" + month;
+  if (day < 10) day = "0" + day;
+
+  var mydate = year + "-" + month + "-" + day;
+
+  document.getElementById("dob").value = mydate;
+
+  function previewFile() {
+    var preview = document.getElementById('profile-pic');
+    var file    = document.getElementById('profile-photo').files[0];
+    var reader  = new FileReader();
+
+    reader.onloadend = function () {
+      preview.src = reader.result;
+    }
+
+    if (file) {
+      reader.readAsDataURL(file);
+    } else {
+      preview.src = "/images/default-profile.jpg";
+    }
+  }
+</script>
